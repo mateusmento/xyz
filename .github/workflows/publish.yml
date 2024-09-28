@@ -3,7 +3,7 @@ name: Publish Package
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*'  # Only trigger the workflow when a version tag is pushed (e.g., v1.0.0)
 
 jobs:
   publish:
@@ -17,11 +17,16 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '20'
+        registry-url: 'https://registry.npmjs.org/'  # Specify the npm registry
+
+    # # Authentication step: This ensures that npm is using the token to publish
+    # - name: Authenticate to npm
+    #   run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
     - name: Install dependencies
       run: npm install
 
     - name: Publish to npm
+      run: npm publish --access public  # Adjust --access flag if needed
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: npm publish
